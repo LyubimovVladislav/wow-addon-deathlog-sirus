@@ -1,7 +1,7 @@
 ## Interface: 30300
 ## Title: Death Logger
 ## Notes: Logs deaths on a hardcore server
-## Author: HentaiEnjoyer
+## Author: github.com/LyubimovVladislav
 ## Version: 1.0
 ## SavedVariables: DeathLoggerDB
 
