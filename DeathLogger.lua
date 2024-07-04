@@ -30,7 +30,7 @@ local DeathLogWidget = {}
 DeathLogWidget.__index = DeathLogWidget
 
 local widgetInstance = nil
-local DeathLoggerTooltip = CreateFrame("GameTooltip", "DeathLoggerTooltip", UIParent, "SharedTooltipTemplate") -- SharedTooltipTemplate
+local DeathLoggerTooltip = CreateFrame("GameTooltip", "DeathLoggerTooltip", UIParent, "SharedTooltipTemplate")
 
 
 DeathLoggerDB = DeathLoggerDB or {}
@@ -295,20 +295,25 @@ local function TimeNow()
 	return date("%H:%M:%S", GetServerTime())
 end
 
+local function GetRaceData(id)
+	local raceTuple = races[id]
+	local coloredRace, race, side
+	if raceTuple then 
+		race = raceTuple[1]
+		side = raceTuple[2]
+		coloredRace = ColorWord(race, side)
+	else
+		race = id
+		coloredRace = race
+		side = "Неизвестно"
+	end
+	return coloredRace, race, side
+end
+
 local function FormatData(data)
 	local timeData = "[" .. TimeNow() .. "]"
 	local name = ColorWord(data.name, classes[data.classID])
-	local raceTuple = races[data.raceID]
-	local race, raceColored, raceSide
-	if raceTuple then 
-		race = raceTuple[1]
-		raceSide = raceTuple[2]
-		raceColored = ColorWord(race, raceSide)
-	else
-		race = data.raceID
-		raceColored = race
-		raceSide = "Неизвестно"
-	end
+	local coloredRace, race, side = GetRaceData(data.raceID)
 	local level
 	if data.level >= 60 then
 		level = ColorWord(data.level .. "ур.", "Золотой")
@@ -318,9 +323,9 @@ local function FormatData(data)
 	local cause = causes[data.causeID] or data.causeID
 
 	
-	local mainStr = string.format("%s %s %s %s", timeData, name, raceColored, level)
+	local mainStr = string.format("%s %s %s %s", timeData, name, coloredRace, level)
 	local tooltip = string.format("Статус: %s\nИмя: %s\nУровень: %d\nКласс: %s\nРаса: %s\nФракция: %s\nЛокация: %s\nПричина: %s", 
-									ColorWord("Провален", "Красный"), data.name, data.level, classes[data.classID], race, raceSide, data.locationStr, cause)
+									ColorWord("Провален", "Красный"), data.name, data.level, classes[data.classID], race, side, data.locationStr, cause)
 	if data.causeID == 7 then
 		tooltip = tooltip .. "\nОт: " .. data.enemyName .. " " .. data.enemyLevel .. "-го уровня"
 	end
@@ -328,20 +333,10 @@ local function FormatData(data)
 end
 
 local function FormatCompletedChallengeData(data)
-	local timeData = ColorWord("[" .. TimeNow() .. "] ", "Золотой")
-	local name = ColorWord(data.name, classes[data.classID]) .. " "
-	local raceTuple = races[data.raceID]
-	local coloredRace, race, side
-	if raceTuple then 
-		coloredRace = ColorWord(raceTuple[1], raceTuple[2])
-		race = raceTuple[1]
-		side = raceTuple[2]
-	else
-		coloredRace = data.raceID
-		race = coloredRace
-		side = "Неизвестно"
-	end
-	local mainStr = timeData .. name .. coloredRace .. ColorWord(" завершил испытание!", "Золотой")
+	local timeData = ColorWord("[" .. TimeNow() .. "]", "Золотой")
+	local name = ColorWord(data.name, classes[data.classID])
+	local coloredRace, race, side = GetRaceData(data.raceID)
+	local mainStr = string.format("%s %s %s %s", timeData, name, coloredRace, ColorWord("завершил испытание!", "Золотой"))
 	local tooltip = string.format("Статус: %s\nИмя: %s\nКласс: %s\nРаса: %s\nФракция: %s", 
 									ColorWord("Пройден", "Зеленый"), data.name, classes[data.classID], race, side)
 	return mainStr, tooltip
