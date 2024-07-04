@@ -1,0 +1,8 @@
+## Interface: 30300
+## Title: Death Logger
+## Notes: Logs deaths on a hardcore server
+## Author: HentaiEnjoyer
+## Version: 1.0
+## SavedVariables: DeathLoggerDB
+
+DeathLogger.lua
